@@ -21,9 +21,13 @@ class ReplayMemory():
         return len(self._memory)
 
     def save(self, state, action, reward, next_state, done):
+        """ Save new experience """
+        
         self._memory.append(MDPTuple(state, action, reward, next_state, done))
 
     def sample(self):
+        """ Sample a batch of random experiences from memory """
+
         # Get memory tuples
         tuples = random.sample(self._memory, k=self._batch_size)
         # Create torch tensors from data
@@ -33,7 +37,6 @@ class ReplayMemory():
         next_states = torch.from_numpy(np.vstack([e.next_state for e in tuples if e is not None])).float().to(self._device)
         dones = torch.from_numpy(np.vstack([e.done for e in tuples if e is not None]).astype(np.uint8)).float().to(self._device)
         return (states, actions, rewards, next_states, dones)
-
 
 class SegmentTree():
     def __init__(self, memory_size, tree_type='sum'):
@@ -55,6 +58,8 @@ class SegmentTree():
 
     # ---------------  Update functions  ---------------
     def update(self, indices, values):
+        """ Update leafs with new values and propagate through parent nodes """
+
         indices = indices + self._length
         # Update leafs
         self._tree[indices] = values
@@ -65,6 +70,8 @@ class SegmentTree():
         self._max_value = max(self._max_value, batch_max)
 
     def update_nodes(self, indices):
+        """ Update parent nodes with changes """
+
         # Get children indices
         children_indices = np.array([indices * 2, (indices * 2) + 1])
         children_indices[children_indices > self._total_length - 1] = 0
@@ -73,6 +80,8 @@ class SegmentTree():
 
     # -------------  Propagete functions  --------------
     def propagate(self, index, diff):
+        """ Simple propagation when single leaf changes """
+
         # Get parent of indexed node
         parent_index = index // 2
         # Add difference
@@ -82,6 +91,8 @@ class SegmentTree():
             self.propagate(parent_index, diff)
 
     def multi_propagate(self, indices):
+        """ Propagation for many leaf changes """
+
         # Get parent nodes
         parent_indices = np.unique(indices // 2)
         # Get parent
@@ -92,6 +103,8 @@ class SegmentTree():
 
     # -----------------  Save function  ----------------
     def append_max(self):
+        """ Append max priority in corresponding index """
+
         # Compute tree index
         index = self._length + self._index
         # Get difference between the new value and the old one
@@ -105,6 +118,8 @@ class SegmentTree():
 
     # ---------------  Search functions  ---------------
     def retrieve(self, indices, values):
+        """ Find smallest indices for a list of values """
+
         # Get children indices
         children_indices = np.array([indices * 2, (indices * 2) + 1])
         # Return leafs
@@ -125,41 +140,58 @@ class SegmentTree():
         return self.retrieve(forward_indices, forward_values)
 
     def find(self, values):
+        """ Search for indices given a set of values """
+
         indices = self.retrieve(np.ones(values.shape, dtype=np.int32), values)
         real_indices = indices - self._length
         return self._tree[indices], real_indices
 
     def get_root(self):
+        """ Get tree root, which represents the sum of all priorities """
         return self._tree[1]
 
-
 class PrioritizedMemory():
-    def __init__(self, memory_size, batch_size, device, seed=0, prioritization=0.5, correction=0.4, correction_increase_rate=0.001, offset=0.01):
+    def __init__(self,
+                 memory_size,
+                 batch_size,
+                 device,
+                 seed=0,
+                 prioritization=0.5,
+                 correction=0.4,
+                 correction_increase_rate=4e-5,
+                 offset=0.01):
+
         # Saving variables
-        self._memory_size = memory_size
-        self._batch_size = batch_size
-        self._random_seed = random.seed(seed)
-        self._numpy_seed = np.random.seed(seed)
+        self._memory_size = memory_size                              #  Max number of MDP tuples
+        self._batch_size = batch_size                                #  Samples per batch
         self._device = device
 
         # Memory variables
-        self._memory = deque(maxlen=memory_size)
-        self._sum_tree = SegmentTree(memory_size)
+        self._memory = deque(maxlen=memory_size)                     #  Main memory to store MDP tuples
+        self._sum_tree = SegmentTree(memory_size)                    #  Segment tree for optimal search
 
         # Hyperparameters
-        self._prioritization = prioritization
-        self._correction = correction
-        self._correction_increase_rate = correction_increase_rate
-        self._offset = offset
+        self._prioritization = prioritization                        #  Prioritization exponent
+        self._correction = correction                                #  Weight correction
+        self._correction_increase_rate = correction_increase_rate    #  Increase rate for weight correction
+        self._offset = offset                                        #  Offset value to avoid 0-valued priorities
+
+        # Set seeds
+        self._random_seed = random.seed(seed)
+        self._numpy_seed = np.random.seed(seed)
 
     def __len__(self):
         return len(self._memory)
 
     def save(self, state, action, reward, next_state, done):
+        """ Save new experience with its priority """
+
         self._memory.append(MDPTuple(state, action, reward, next_state, done))
         self._sum_tree.append_max()
 
     def get_proportional_sample(self):
+        """ Get uniform samles throw segmentation of the distribution """
+
         priorities_sum = self._sum_tree.get_root()
         segment_len = priorities_sum / self._batch_size
         segment_starts = np.arange(self._batch_size) * segment_len
@@ -176,6 +208,8 @@ class PrioritizedMemory():
         return indices, np.array(probs)
 
     def get_experiences(self, indices):
+        """ Get experience tuples from memory """
+
         tuples = np.array([ self._memory[i] for i in indices ])
         states, actions, rewards, next_states, dones = zip(*tuples)
 
@@ -189,11 +223,15 @@ class PrioritizedMemory():
         return states, actions, rewards, next_states, dones
 
     def get_weights(self, probs):
+        """ Compute weights for priorities' relevance in the learning step """
+
         weights = (len(self._memory) * probs) ** -self._correction
         norm_weights = weights / weights.max()
         return norm_weights
 
     def sample(self):
+        """ Sample a batch of experiences from memory """
+
         # Search for indices and probs in sum tree
         indices, probs = self.get_proportional_sample()
         # Get data from experiences
@@ -212,6 +250,8 @@ class PrioritizedMemory():
         return (states, actions, rewards, next_states, dones), weights, indices
 
     def update_priorities(self, indices, errors):
+        """ Update batch priorities with new Temporal-Difference errors """
+
         priorities = np.power(errors + self._offset, self._prioritization)
         self._sum_tree.update(indices, priorities)
         self._correction += self._correction_increase_rate

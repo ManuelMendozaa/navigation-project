@@ -12,7 +12,7 @@
 
 *Prioritized Experience Replay*: Experience Replay does an incredible job upgrading DQN systems, but  still some upgrades can be made by prioritizing some experiences more than others based on the Temporal Difference error, which establishes the difference between the computed `Q(s, a)` and the new `Q(s', a)` with the given reward from state `s`. This difference tells us if something unexpected happens to the agent and therefore is necessary to keep learning from that experience.
 
-*Double DQN*: Another extension of the DQN architecture is to add a second Deep Neural Network (the target network) that updates every time the original (or local network) finishes its training in every step. In every new learning step, the local network tries to outperform the target network containing the updates from the last backpropagation. To make this even more stable, there can be added a new hyperparameter $\tau$ to merge a percentage of the local network with the target network.
+*Double DQN*: Another extension of the DQN architecture is to add a second Deep Neural Network (the target network) that updates every time the original (or local network) finishes its training in every step. In every new learning step, the local network tries to outperform the target network containing the updates from the last backpropagation. To make this even more stable, there can be added a new hyperparameter τ to merge a percentage of the local network with the target network.
 
 *Dueling Network*: Finally, this extension of the DQN proposes a different output for the neural network, where instead of returning `Q(s, a)` directly, it can return the State-Value function and the advantage values of the actions denoted `A(s, a)`. In this case, to obtain the `Q(s, a)` it would be necessary to add both the State-Value with the advantage values of each action.
 
@@ -24,16 +24,16 @@ The hyperparameter selection was based on the recommendations from the [Rainbow 
   | ----------------------------------- | ------------- |
   | Replay buffer size                  | 1e5           |
   | Batch size                          | 64            |
-  | Discount Factor $\gamma$            | 0.99          |
-  | Soft Update $\tau$                  | 1e-3          |
-  | Adam learning rate $\alpha$         | 6.25e-5       |
+  | Discount Factor γ                   | 0.99          |
+  | Soft Update τ                       | 1e-3          |
+  | Adam learning rate α                | 6.25e-5       |
   | Prioritization type                 | Proportional  |
-  | Prioritization exponent $\omega$    | 0.5           |
-  | Prioritization correction $\beta$   | 0.4           |
+  | Prioritization exponent ω           | 0.5           |
+  | Weights correction β                | 0.4           |
   | Correction increase rate            | 4e-5          |
   | Multi-step                          | 3             |
   | Number of episodes                  | 2000          |
-  | Epsilon $\epsilon$                  | 1.0           |
+  | Exploration ε                       | 1.0           |
   | Epsilon minimum                     | 0.1           |
   | Epsilon decay                       | 0.99          |
 
@@ -46,7 +46,7 @@ To gain some understanding of each extension of the DQN architecture, every sing
 |------------------------------| ------------------------------------------------ | ------------------------------------ | ---------------------------------------- |
 | ![dqn](images/dqn_graph.png) | ![prioritized-dqn](images/prioritized_graph.png) | ![double dqn](images/ddqn_graph.png) | ![dueling dqn](images/dueling_graph.png) |
 
-Neither DQN nor Prioritized Replay nor Dueling DQN networks completed the environment in less than 1000. This, along with some lack of hyperparameters searching, suggests that the DDQN extension provides a good amount of stability to the learning process. The Double DQN agent solved the environment in 469 episodes, but its plot reward will not be presented since the mini-rainbow agent (mini-rainbow since I could not finish all extensions presented in the paper) did it in less episodes.
+Neither DQN nor Prioritized Replay nor Dueling DQN networks completed the environment in less than 1000. This, along with some lack of hyperparameters searching, suggests that the DDQN extension provides a good amount of stability to the learning process. The Double DQN agent solved the environment in 469 episodes, but its plot reward will not be presented since the mini-rainbow agent (mini-rainbow, since I could not finish all extensions, explained in the paper) did it in fewer episodes.
 
 Finally, the results of the agent with all three extensions is provided below:
 | Training Graph                           | Reward Plot                            |
