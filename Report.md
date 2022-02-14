@@ -42,9 +42,13 @@ The hyperparameter selection was based on the recommendations from the [Rainbow 
 
 To gain some understanding of each extension of the DQN architecture, every single one of these was added alone to the architecture and then checked its results, which are listed above along with the vanilla DQN:
 
-| DQN                          | Prioritized DQN                                  | Double DQN                           | Dueling DQN                              |
-|------------------------------| ------------------------------------------------ | ------------------------------------ | ---------------------------------------- |
-| ![dqn](images/dqn_graph.png) | ![prioritized-dqn](images/prioritized_graph.png) | ![double dqn](images/ddqn_graph.png) | ![dueling dqn](images/dueling_graph.png) |
+| DQN                          | Prioritized DQN                                  |
+|------------------------------| ------------------------------------------------ |
+| ![dqn](images/dqn_graph.png) | ![prioritized-dqn](images/prioritized_graph.png) |
+
+| Double DQN                           | Dueling DQN                              |
+| ------------------------------------ | ---------------------------------------- |
+| ![double dqn](images/ddqn_graph.png) | ![dueling dqn](images/dueling_graph.png) |
 
 Neither DQN nor Prioritized Replay nor Dueling DQN networks completed the environment in less than 1000. This, along with some lack of hyperparameters searching, suggests that the DDQN extension provides a good amount of stability to the learning process. The Double DQN agent solved the environment in 469 episodes, but its plot reward will not be presented since the mini-rainbow agent (mini-rainbow, since I could not finish all extensions, explained in the paper) did it in fewer episodes.
 
