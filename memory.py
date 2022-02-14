@@ -5,6 +5,11 @@ from collections import deque, namedtuple
 
 MDPTuple = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
 
+"""
+    Both SegmentTree and PrioritizedMemory classes were inspired by the
+    Deep Mind repository file https://github.com/deepmind/dqn_zoo/blob/f011d683529d8d23b017a95194ebbb41a4962fe8/dqn_zoo/replay.py#L305
+"""
+
 class ReplayMemory():
     def __init__(self, memory_size, batch_size, device, seed=0):
         # Saving variables
@@ -22,7 +27,7 @@ class ReplayMemory():
 
     def save(self, state, action, reward, next_state, done):
         """ Save new experience """
-        
+
         self._memory.append(MDPTuple(state, action, reward, next_state, done))
 
     def sample(self):
