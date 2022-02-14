@@ -1,7 +1,7 @@
-## Udacity Deep Reinforcement Learning Nanodegree
-### Project 1: Navigation
+# Udacity Deep Reinforcement Learning Nanodegree
+## Project 1: Navigation
 
-##### &nbsp;
+#### &nbsp;
 
 ### Project Details
 The goal of this project is to train a RL agent to navigate inside an square world collecting yellow bananas while avoiding blue ones.

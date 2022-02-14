@@ -1,7 +1,7 @@
-## Udacity Deep Reinforcement Learning Nanodegree
-### Project 1: Navigation
+# Udacity Deep Reinforcement Learning Nanodegree
+## Project 1: Navigation
 
-##### &nbsp;
+#### &nbsp;
 
 ### Report
 #### 1. Arquitecture components
@@ -32,10 +32,10 @@ The hyperparameter selection was based on the recommendations from the [Rainbow 
   | Weights correction β                | 0.4           |
   | Correction increase rate            | 4e-5          |
   | Multi-step                          | 3             |
-  | Number of episodes                  | 2000          |
+  | Number of episodes                  | 1000          |
   | Exploration ε                       | 1.0           |
   | Epsilon minimum                     | 0.1           |
-  | Epsilon decay                       | 0.99          |
+  | Epsilon decay                       | 0.98          |
 
 
 #### 3. Results
@@ -49,6 +49,7 @@ To gain some understanding of each extension of the DQN architecture, every sing
 Neither DQN nor Prioritized Replay nor Dueling DQN networks completed the environment in less than 1000. This, along with some lack of hyperparameters searching, suggests that the DDQN extension provides a good amount of stability to the learning process. The Double DQN agent solved the environment in 469 episodes, but its plot reward will not be presented since the mini-rainbow agent (mini-rainbow, since I could not finish all extensions, explained in the paper) did it in fewer episodes.
 
 Finally, the results of the agent with all three extensions is provided below:
+
 | Training Graph                           | Reward Plot                            |
 | ---------------------------------------- | -------------------------------------- |
 | ![graph](images/mini_rainbow_graph.png)  | ![reward-plot](images/reward-plot.png) |
