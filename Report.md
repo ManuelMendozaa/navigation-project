@@ -4,7 +4,7 @@
 #### &nbsp;
 
 ### Report
-#### 1. Arquitecture components
+#### 1. Architecture components
 
 *Deep Q-Networks*: The soul of the systems relies on the Reinforcement Learning field, specifically on the Deep Q-Network architecture (DQN). The main goal of these types of architectures is to find the Action-Value function `Q(s, a)`, which represents the evaluation in the state `s` of the action `a`.  This is achieved in DQN throw Deep Neural Networks systems, giving `s` as the input and expecting `Q(s, a)` in the output. It is worth noticing there are many actions available per state, therefore the architecture returns all `Q` values for all of them in one single pass.
 
@@ -14,7 +14,7 @@
 
 *Double DQN*: Another extension of the DQN architecture is to add a second Deep Neural Network (the target network) that updates every time the original (or local network) finishes its training in every step. In every new learning step, the local network tries to outperform the target network containing the updates from the last backpropagation. To make this even more stable, there can be added a new hyperparameter τ to merge a percentage of the local network with the target network.
 
-*Dueling Network*: Finally, this extension of the DQN proposes a different output for the neural network, where instead of returning `Q(s, a)` directly, it can return the State-Value function and the advantage values of the actions denoted `A(s, a)`. In this case, to obtain the `Q(s, a)` it would be necessary to add both the State-Value with the advantage values of each action.
+*Dueling Network*: Finally, this extension of the DQN proposes a different output for the neural network, where instead of returning `Q(s, a)` directly, it can return the State-Value function `V(s)` and the advantage values of the actions denoted `A(s, a)`. In this case, to obtain the `Q(s, a)` it would be necessary to add both the State-Value with the advantage values of each action.
 
 #### 2. Hyperparameters
 
@@ -37,6 +37,7 @@ The hyperparameter selection was based on the recommendations from the [Rainbow 
   | Epsilon minimum                     | 0.1           |
   | Epsilon decay                       | 0.98          |
 
+The number of units in each neural network layer can be considered a hyperparameter as well. This project's network consisted of two linear layers, both with 64 units, and both followed by a ReLU activation function. The final linear layer had the same units number as the action space size. For the Dueling Networks, the output was achieved through two previous layers, one with one unit representing `V(s)` and the other with action size number units `A(s, a)`, explained in the architecture section.
 
 #### 3. Results
 
