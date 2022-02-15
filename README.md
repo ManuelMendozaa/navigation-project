@@ -76,5 +76,3 @@ To set up your python environment to run the code in this repository, follow the
     ```
 
 6. Before running code in a notebook, change the kernel to match the `drlnd` environment by using the drop-down `Kernel` menu.
-
-![Kernel][image2]
